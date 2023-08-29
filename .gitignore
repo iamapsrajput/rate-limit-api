@@ -1,0 +1,37 @@
+# Ignore compiled Python files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore environment folders
+venv/
+env/
+env-bak/
+
+# Ignore local development settings
+*.env
+
+# Ignore generated files and folders
+logs/
+*.log
+*.db
+
+# Ignore system and IDE files
+.DS_Store
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Ignore Docker-related files
+docker-compose.yml
+*.dockerignore
+
+# Ignore any sensitive or confidential information
+*.key
+*.pem
+
+# Ignore generated coverage reports
+.coverage
+htmlcov/
