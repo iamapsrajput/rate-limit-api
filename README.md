@@ -8,6 +8,7 @@ Rate Limiting API is a Flask-based RESTful API that provides endpoints to genera
 - [Features](#features)
 - [Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
+  - [Dependencies](#dependencies)
   - [Installation](#installation)
   - [Running the API](#running-the-api)
 - [API Endpoints](#api-endpoints)
