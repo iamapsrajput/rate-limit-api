@@ -1,6 +1,4 @@
-# import base64
-# added current_app for logging
-from flask import Blueprint, jsonify, request, current_app as app
+from flask import Blueprint, jsonify, request, current_app as app # added current_app for logging
 from werkzeug.security import check_password_hash
 from app.common.config import USERS_DB
 from app.api.services.random_data_service import get_random_data

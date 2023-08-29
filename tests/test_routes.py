@@ -1,8 +1,6 @@
 import unittest
-# import base64
 import json
 from app import create_app
-from datetime import datetime, timedelta
 from flask_jwt_extended import create_access_token
 from app.utils.token_utils import generate_expired_token
 import requests
