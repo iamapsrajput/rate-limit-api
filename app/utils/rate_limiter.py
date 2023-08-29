@@ -1,41 +1,54 @@
 import time
 from app.common.config import RATE_LIMIT, RATE_LIMIT_TIME_SPAN
 
-# In-memory rate limiting module
-# This module provides basic rate limiting functionality. For production scalability,
-# consider using a distributed rate limiter like Redis.
+"""
+This module provides basic rate limiting functionality using an in-memory dictionary.
+"""
 
-# In-memory dictionary to track rate limit data for each user
+"""
+In-memory dictionary to track rate limit data for each user
+"""
 _rate_limit_store = {}
+
 
 def reset_rate_limit_for_client(username):
     """
-    Reset the rate limit counters for a specific user.
+    This function resets the rate limit counters for a specific user.
 
     Args:
     - username (str): The username of the client whose rate limit needs to be reset.
+
+    Returns:
+    - None
     """
+
     if username in _rate_limit_store:
         _rate_limit_store[username]["bytes_consumed"] = 0
         _rate_limit_store[username]["last_request_time"] = time.time()
 
+
 def set_rate_limit_for_client(username, new_limit):
     """
-    Set a new rate limit for a specific user.
+    This function sets a new rate limit for a specific user.
 
     Args:
     - username (str): The username of the client for whom the rate limit is being set.
     - new_limit (int): The new rate limit in bytes per 10 seconds.
+
+    Returns:
+    - None
     """
+
     _rate_limit_store[username] = {
         "last_request_time": time.time(),
         "bytes_consumed": 0,
         "rate_limit": new_limit
     }
 
+
 def is_within_rate_limit(username, requested_bytes):
     """
-    Check if the user is within their rate limit for the requested bytes.
+    This function checks if the user is within their rate limit for the requested bytes.
 
     Args:
     - username (str): The username of the authenticated user.

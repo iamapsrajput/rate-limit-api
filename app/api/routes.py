@@ -1,37 +1,40 @@
-import base64
+# import base64
 # added current_app for logging
 from flask import Blueprint, jsonify, request, current_app as app
 from werkzeug.security import check_password_hash
 from app.common.config import USERS_DB
 from app.api.services.random_data_service import get_random_data
 from flask_jwt_extended import jwt_required, create_access_token, get_jwt_identity
-from jwt.exceptions import ExpiredSignatureError, InvalidTokenError
 from app.utils.rate_limiter import set_rate_limit_for_client, reset_rate_limit_for_client
 
 bp = Blueprint('api', __name__)
 
-# Define the Blueprint for API routes.
-# This module includes all the API endpoints' routes and their logic.
-# It can be registered with the Flask app to make the API endpoints accessible.
-
+"""
+Define the Blueprint for API routes.
+This module includes all the API endpoints' routes and their logic.
+It can be registered with the Flask app to make the API endpoints accessible.
+"""
 
 @bp.route('/login', methods=['POST'])
 def login():
     """
-    Authenticate the user and provide an access token upon successful login.
+    This function authenticates the user and returns an access token if the login is successful.
 
     Returns:
-    - tuple: A tuple containing a dictionary with an access token if authentication is successful,
-             or an "error" message if authentication fails, the HTTP status code, and the response headers.
+    - tuple: The function returns a tuple of three values:
+           * The access token, if the login is successful.
+           * An error message, if the login fails.
+           * The HTTP status code.
+           * The response headers.
     """
     if not request.is_json:
-        return jsonify({"error": "Missing JSON in request"}), 400
+        return jsonify({"msg": "Missing JSON in request"}), 400
 
     username = request.json.get('username', None)
     password = request.json.get('password', None)
 
     if not username or not password:
-        return jsonify({"error": "Missing username or password"}), 400
+        return jsonify({"msg": "Missing username or password"}), 400
 
     stored_hash = USERS_DB.get(username, None)
     if stored_hash and check_password_hash(stored_hash, password):
@@ -39,23 +42,25 @@ def login():
         return jsonify(access_token=access_token), 200
 
     app.logger.warning(f'Failed login attempt for user {username}.')
-    return jsonify({"error": "Bad username or password"}), 401
+    return jsonify({"msg": "Bad username or password"}), 401
 
 
 @bp.route('/random', methods=['GET'])
 @jwt_required()
 def random_data():
     """
-    Provide random data to the authenticated user within rate limit.
+    This function provides random data to the authenticated user within the rate limit.
 
     Returns:
-    - tuple: A tuple containing a dictionary with "random" data if within rate limit,
-             the HTTP status code, and the response headers.
+    - tuple: The function returns a tuple of three values:
+           * "random" data if within rate limit.
+           * The HTTP status code.
+           * The response headers.
     """
     try:
         byte_size = request.args.get('len', default=32, type=int)
     except ValueError:
-        return jsonify({"error": "Invalid value for len parameter"}), 400
+        return jsonify({"msg": "Invalid value for len parameter"}), 400
 
     current_user = get_jwt_identity()
     app.logger.info(
@@ -67,15 +72,18 @@ def random_data():
 @jwt_required()
 def manage_rate_limit():
     """
-    Manage rate limit settings for clients.
+    This function manages rate limit settings for clients.
 
     Returns:
-    - tuple: A tuple containing a dictionary with a response message,
-             the HTTP status code, and the response headers.
+    - tuple: The function returns a tuple of three values:
+           * A response message.
+           * The HTTP status code.
+           * The response headers.
     """
     current_user = get_jwt_identity()
     if current_user != "admin":
-        app.logger.warning(f'Unauthorized admin access attempt by {current_user}.')
+        app.logger.warning(
+            f'Unauthorized admin access attempt by {current_user}.')
         return jsonify({"msg": "Admin access only!"}), 403
 
     try:
@@ -91,7 +99,8 @@ def manage_rate_limit():
         return jsonify({"msg": "Specify the client's username!"}), 400
 
     if reset_limit:
-        app.logger.info(f'Admin {current_user} reset rate limit for client {client_username}.')
+        app.logger.info(
+            f'Admin {current_user} reset rate limit for client {client_username}.')
         reset_rate_limit_for_client(client_username)
         return jsonify({"msg": f"Rate limit for {client_username} has been reset."}), 200
 
@@ -99,7 +108,8 @@ def manage_rate_limit():
         if not isinstance(new_limit, int) or new_limit <= 0:
             return jsonify({"msg": "New limit must be a positive integer!"}), 400
 
-        app.logger.info(f'Admin {current_user} set a new rate limit of {new_limit} bytes/10 seconds for client {client_username}.')
+        app.logger.info(
+            f'Admin {current_user} set a new rate limit of {new_limit} bytes/10 seconds for client {client_username}.')
         set_rate_limit_for_client(client_username, new_limit)
         return jsonify({"msg": f"Rate limit for {client_username} has been set to {new_limit} bytes per 10 seconds."}), 200
 
@@ -111,24 +121,60 @@ def manage_rate_limit():
 @bp.route('/health', methods=['GET'])
 def health_check():
     """
-    Perform a health check on the application.
+    This function performs a health check on the application.
 
     Returns:
-    - tuple: A tuple containing a dictionary with a status message,
-             the HTTP status code, and the response headers.
+    - tuple: The function returns a tuple of three values:
+           * A status message.
+           * The HTTP status code.
+           * The response headers.
     """
     return jsonify(status="Healthy"), 200
+
+
+# Handle 400 - Bad Request errors
+
+@bp.app_errorhandler(400)
+def bad_request_error(error):
+    app.logger.warning('400 error encountered. Bad request.')
+    return jsonify(error="Bad Request"), 400
+
+
+# Handle 401 - Unauthorized errors
+
+@bp.app_errorhandler(401)
+def unauthorized_access(error):
+    app.logger.warning('401 Unauthorized access attempt.')
+    return jsonify(msg="Unauthorized"), 401
+
+
+# Handle 403 - Forbidden errors
+
+@bp.app_errorhandler(403)
+def forbidden_access(error):
+    app.logger.warning('403 Forbidden access attempt.')
+    return jsonify(msg="Forbidden"), 403
+
 
 # Handle 404 - Not Found errors
 
 @bp.app_errorhandler(404)
 def not_found_error(error):
     app.logger.warning('404 error encountered.')
-    return jsonify(error="Not Found"), 404
+    return jsonify(msg="Not Found"), 404
+
+
+# Handle 405 - Method Not Allowed errors
+
+@bp.app_errorhandler(405)
+def method_not_allowed_error(error):
+    app.logger.warning('405 error encountered. Method not allowed.')
+    return jsonify(error="Method Not Allowed"), 405
+
 
 # Handle 500 - Internal Server Error
 
 @bp.app_errorhandler(500)
 def internal_error(error):
     app.logger.error('500 error encountered.')
-    return jsonify(error="Internal Server Error"), 500
+    return jsonify(msg="Internal Server Error"), 500

@@ -29,7 +29,7 @@ Rate Limiting API is designed to showcase the implementation of a Flask-based RE
 
 ## Features
 
-- User authentication and JWT-based authorization for secure API access.
+- User authentication and JWT-based Authorization for secure API access.
 - Generate random data of custom lengths for various use cases.
 - Rate limiting to prevent abuse and ensure fair usage of the API.
 - Admin functionality to manage rate limits for users, maintaining control.
@@ -41,6 +41,14 @@ Rate Limiting API is designed to showcase the implementation of a Flask-based RE
 
 - Python 3.9
 - Docker (optional)
+
+### Dependencies
+
+- Flask==2.0.1
+- Flask-HTTPAuth==4.2.0
+- Flask-JWT-Extended
+- Werkzeug==2.0.1
+- certifi
 
 ### Installation
 
@@ -131,14 +139,14 @@ Request (Set New Rate Limit):
 To run the automated tests, execute the following command:
 
 ```bash
-python -m unittest discover tests
+python3 -m unittest discover tests
 ```
 
 ## Assumptions and Design Decisions
 
-- **JWT-Based Authorization:** I chose to use JSON Web Tokens (JWT) for user authentication and authorization due to their stateless nature and support for claims like user roles and permissions.
+- **JWT-Based Authorization:** I used JSON Web Tokens (JWT) for user authentication and Authorization due to their stateless nature and support for claims like user roles and permissions.
 
-- **Rate Limiting Strategy:** To simplify the implementation, we used an in-memory dictionary for rate limiting. However, we acknowledge that this solution won't scale horizontally across multiple instances and recommend a distributed solution like Redis in production.
+- **Rate Limiting Strategy:** To simplify the implementation, I used an in-memory dictionary for rate limiting. However, this solution won't scale horizontally across multiple instances and recommends a distributed solution like Redis in production.
 
 - **Logging and Error Handling:** I implemented logging to record important events such as login attempts and access to restricted routes. Error handling is comprehensive to provide users with meaningful error messages.
 
@@ -153,7 +161,7 @@ python -m unittest discover tests
 1. Clone the repository.
 2. Install required dependencies (`pip3 install -r requirements.txt`).
 3. Run the API using `python3 run.py`.
-4. Use tools like `curl` or the `requests` library to test the endpoints.
+4. Test endpoints using tools like `curl` or the `requests` library.
 
 ## Rate Reset and Parallel Requests
 
@@ -185,10 +193,6 @@ The application can also be run within a Docker container. To build and run the 
    docker run -p 4000:4000 ratelimitingapi:latest
    ```
    The API will be accessible at `http://localhost:4000`.
-
-## Contributing
-
-Contributions to Rate Limiting API are welcome! Feel free to open issues or submit pull requests.
 
 ## License
 

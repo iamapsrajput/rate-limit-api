@@ -1,4 +1,7 @@
-# Use the official Python image as the base image
+# This Dockerfile uses the official Python image as the base image.
+# The Python image is a lightweight image that contains the Python programming language and its dependencies.
+
+# Use the official Python lightweight image as the base image
 FROM python:3.9-slim
 
 # Set the working directory inside the container
