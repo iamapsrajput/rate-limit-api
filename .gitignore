@@ -16,6 +16,7 @@ env-bak/
 logs/
 *.log
 *.db
+temp.txt
 
 # Ignore system and IDE files
 .DS_Store
