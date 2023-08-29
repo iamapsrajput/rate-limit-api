@@ -60,7 +60,7 @@ Rate Limiting API is designed to showcase the implementation of a Flask-based RE
    ```
 3. Install the required dependencies:
    ```bash
-   pip install -r requirements.txt
+   pip3 install -r requirements.txt
    ```
 
 ### Running the API
@@ -70,7 +70,7 @@ To run the API locally, follow these steps:
 1. Make sure you're in the project directory.
 2. Start the API server using the following command:
    ```bash
-   python run.py
+   python3 run.py
    ```
    The API will be accessible at `http://localhost:4000`.
 
