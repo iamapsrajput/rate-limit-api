@@ -2,7 +2,7 @@
 # The Python image is a lightweight image that contains the Python programming language and its dependencies.
 
 # Use the official Python lightweight image as the base image
-FROM python:3.9-slim
+FROM python:3.14.0rc1-slim
 
 # Set the working directory inside the container
 WORKDIR /app
